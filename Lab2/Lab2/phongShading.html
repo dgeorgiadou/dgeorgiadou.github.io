@@ -40,8 +40,8 @@ void main()
 	float pi = 3.1415926; //Approximate pi
     float centerX=0.0; //X coordinate of the center point
     float centerY=-15; //Y coordinate of center point
-    float currX = aPosition.x; //X coordinate of the current point
-    float currY = aPosition.y; //Y coordinate of current point
+    float currX = mvPosition.x; //X coordinate of the current point
+    float currY = mvPosition.y; //Y coordinate of current point
     float spanX = currX - centerX; //Current X offset
     float spanY = currY - centerY; //Current Y offset
     float currRadius = sqrt(spanX * spanX + spanY * spanY); //Calculate distance
@@ -55,7 +55,7 @@ void main()
     float resultX = centerX + currRadius * cos(resultRadians); //X coordinate of calculation result point
     float resultY = centerY + currRadius * sin(resultRadians); //Y coordinate of calculation result point
     outTexCoor = inTexCoor; //Texture coordinates transferred to slice shader
-    gl_Position = myConstantVals.mvp * vec4(resultX,resultY,0.0,1.0); //Calculate the final position of the vertex
+    gl_Position = mv*mv*vPosition* vec4(resultX,resultY,0.0,1.0); //Calculate the final position of the vertex
   
   
     
