@@ -51,11 +51,10 @@ void main()
     }else{ //exceptional case
     currRadians = spanY > 0.0 ? pi/2.0 : 3.0*pi/2.0;
     }
-    float resultRadians = currRadians + mv.ratio*currRadius; //Calculate the angle after twisting
+    float resultRadians = currRadians + mv*currRadius; //Calculate the angle after twisting
     float resultX = centerX + currRadius * cos(resultRadians); //X coordinate of calculation result point
     float resultY = centerY + currRadius * sin(resultRadians); //Y coordinate of calculation result point
-    outTexCoor = inTexCoor; //Texture coordinates transferred to slice shader
-    gl_Position = mv*mv*vPosition* vec4(resultX,resultY,0.0,1.0); //Calculate the final position of the vertex
+    gl_Position = mv*p*vPosition* vec4(resultX,resultY,0.0,1.0); //Calculate the final position of the vertex
   
   
     
