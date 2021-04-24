@@ -32,11 +32,32 @@ vec3 N; // fixed surface normal
 void main() 
 {
   //Transform the point
-  mvPosition = mv*vPosition;  //mvPosition is interpolated for pixel lighting
-  gl_Position = p*mvPosition; 
+  //mvPosition = mv*vPosition;  //mvPosition is interpolated for pixel lighting
+  //gl_Position = p*mvPosition; 
 
   //normal is also interpolated for pixel lighting
-  normal = (mv*vec4(vNormal,0.0)).xyz;
+ // normal = (mv*vec4(vNormal,0.0)).xyz ;
+	float pi = 3.1415926; //Approximate pi
+    float centerX=0.0; //X coordinate of the center point
+    float centerY=-15; //Y coordinate of center point
+    float currX = aPosition.x; //X coordinate of the current point
+    float currY = aPosition.y; //Y coordinate of current point
+    float spanX = currX - centerX; //Current X offset
+    float spanY = currY - centerY; //Current Y offset
+    float currRadius = sqrt(spanX * spanX + spanY * spanY); //Calculate distance
+    float currRadians; //Angle between the current point and the positive direction of X axis
+    if(spanX != 0.0){ //General
+    currRadians = atan(spanY , spanX);
+    }else{ //exceptional case
+    currRadians = spanY > 0.0 ? pi/2.0 : 3.0*pi/2.0;
+    }
+    float resultRadians = currRadians + myBufferVals.ratio*currRadius; //Calculate the angle after twisting
+    float resultX = centerX + currRadius * cos(resultRadians); //X coordinate of calculation result point
+    float resultY = centerY + currRadius * sin(resultRadians); //Y coordinate of calculation result point
+    outTexCoor = inTexCoor; //Texture coordinates transferred to slice shader
+    gl_Position = myConstantVals.mvp * vec4(resultX,resultY,0.0,1.0); //Calculate the final position of the vertex
+  
+  
     
 }
     </script>
