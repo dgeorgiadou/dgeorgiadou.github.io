@@ -104,7 +104,7 @@ window.onload = function init() {
    //** start loading an obj.
    // The obj's buffers will need to be bound to draw them
    // see bindBuffersToShader() function for details.
-   obj = loadObj(gl, "BatmanArmoured.obj");
+   obj = loadObj(gl, "SmoothBatman.obj");
 
 
    // Get addresses of transformation uniforms
