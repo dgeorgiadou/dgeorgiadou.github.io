@@ -173,6 +173,14 @@ window.onload = function init()
 	urgl.connectShader(program, "vPosition", "vNormal", "stub");
 
 	batman = loadObj(gl, "BatmanArmoured.obj");
+	
+	var ele = document.getElementById("depth");
+	ele.oninput = ele.onchange = function (event) {
+		var depth = (event.srcElement || event.target).value;
+		document.getElementById("depthVal").innerHTML =document.getElementById("depth").value;
+   };
+  
+
 
 	requestAnimFrame(render);
 };
@@ -189,7 +197,7 @@ function setBottomColor(picker) {
 //----------------------------------------------------------------------------
 // Rendering Event Function
 //----------------------------------------------------------------------------
-var rx = 0, ry = 0;
+var rx = 0, ry = 0, depth =0;;
 function render()
 {
 	gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
@@ -216,12 +224,16 @@ function render()
 		gl.drawElements(gl.TRIANGLES, batman.numIndices, gl.UNSIGNED_SHORT,0);	
 
 	}
-
-	var sphereTF = mult(mv, translate(-2,0,0));
+	depth = document.getElementById("depth").value;
+	if(depth == undefined || depth == null){
+		depth=0;
+	}
+	depth  = (-1)*depth;
+	
+	var sphereTF = mult(mv, translate(-2,0,depth));
 	gl.uniformMatrix4fv(mvLoc, gl.FALSE, flatten(sphereTF));
 	urgl.drawSolidSphere(1,50,50);
-
-	sphereTF = mult(mv, translate(2,0,0));
+	sphereTF = mult(mv, translate(2,0,depth));
 	gl.uniformMatrix4fv(mvLoc, gl.FALSE, flatten(sphereTF));
 	urgl.drawSolidSphere(1,50,50);
 

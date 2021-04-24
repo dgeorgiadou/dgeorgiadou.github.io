@@ -99,12 +99,14 @@ void main()
         Oops ... your browser doesn't support the HTML5 canvas element
     </canvas>
     <div>Light direction: x<input id="dx" type="text" > y<input id="dy" type="text" > z<input id="dz" type="text" ></div>
+	<div>Depth: <input id="depth" type="range" min="0" max="20" step="2" value="0" style="width: 650px;"><span id="depthVal">depth</span></div>
     <button id="topColor" class="jscolor {valueElement:'chosen-value', onFineChange:'setTopColor(this)'}" style="width: 400px; height: 100px;">
 		Top Color
 	</button>
     <button id="bottomColor" class="jscolor {valueElement:'chosen-value', onFineChange:'setBottomColor(this)'}" style="width: 400px; height: 100px;">
 		Bottom Color
 	</button>
+	
 	<br />
 </body>
 </html>
