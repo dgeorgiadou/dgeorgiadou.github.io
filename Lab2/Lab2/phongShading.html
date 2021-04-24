@@ -51,7 +51,7 @@ void main()
     }else{ //exceptional case
     currRadians = spanY > 0.0 ? pi/2.0 : 3.0*pi/2.0;
     }
-    float resultRadians = currRadians + myBufferVals.ratio*currRadius; //Calculate the angle after twisting
+    float resultRadians = currRadians + mv.ratio*currRadius; //Calculate the angle after twisting
     float resultX = centerX + currRadius * cos(resultRadians); //X coordinate of calculation result point
     float resultY = centerY + currRadius * sin(resultRadians); //Y coordinate of calculation result point
     outTexCoor = inTexCoor; //Texture coordinates transferred to slice shader
