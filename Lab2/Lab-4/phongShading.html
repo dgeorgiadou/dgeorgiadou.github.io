@@ -55,8 +55,8 @@ void main()
 
 	degrees = (vPosition.z -(vPosition.z - 1))/ ((vPosition.z + 1) -(vPosition.z - 1));
 	degrees = degrees* degreesMax;
-	float s = sin(degrees);
-	float c = cos(degrees);
+	float s = sin(degrees*pi/180);
+	float c = cos(degrees*pi/180);
 	//gl_Position.x = c * vPosition.x - s * vPosition.y;
 	//gl_Position.y = s * vPosition.x + c * vPosition.y;
 	//gl_Position.z = 1.0;
