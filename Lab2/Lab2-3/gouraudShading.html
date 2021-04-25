@@ -12,48 +12,8 @@
 attribute vec4 vPosition;
 attribute vec3 vNormal;
 
-
 //outputs
 varying vec4 color;
-varying vec3 normal;
-varying vec4 mvPosition; //unprojected vertex position
-
-
-//constants
-const int n = 1; // number of lights
-
-//uniforms
-uniform mat4 p;     // perspective matrix
-uniform mat4 mv;    // modelview matrix
-
-//globals
-vec3 N; // fixed surface normal
-
-void main() 
-{
-  //Transform the point
-  mvPosition = mv*vPosition;  //mvPosition is interpolated for pixel lighting
-  gl_Position = p*mvPosition; 
-
-  //normal is also interpolated for pixel lighting
-   normal = (mv*vec4(vNormal,0.0)).xyz;
-  
-    
-}
-
-    </script>
-
-    <!-- This in-line script is a fragment shader resource.
-         Shaders can be linked from an external file as well. -->
-    <script id="fragment-shader" type="x-shader/x-fragment">
-
-precision mediump float;
-varying vec4 color;
-varying vec3 normal; 
-varying vec4 mvPosition;
-
-vec3 N;
-
 
 //structs
 struct _light
@@ -76,31 +36,46 @@ struct _material
 const int nLights = 1; // number of lights
 
 //uniforms
+uniform mat4 p;     // perspective matrix
+uniform mat4 mv;    // modelview matrix
 uniform bool lighting;  // to enable and disable lighting
 uniform vec4 uColor;    // colour to use when lighting is disabled
 uniform _light light[nLights]; // properties for the n lights
-uniform _material material; // material properties    	
-  vec4 lightCalc(in _light light);
-  	
-    	
+uniform _material material; // material properties
+
+//globals
+vec4 mvPosition; // unprojected vertex position
+vec3 N; // fixed surface normal
+
+//prototypes
+vec4 lightCalc(in _light light);
+
 void main() 
-{ 
-  gl_FragColor = color;
-  if (lighting != false) 
+{
+  //Transform the point
+  mvPosition = mv*vPosition;  //mvPosition is used often
+  gl_Position = p*mvPosition; 
+
+  if (lighting == false) 
+  {
+	color = uColor;
+  }
+  else
   {
     //Make sure the normal is actually unit length, 
     //and isolate the important coordinates
-    N = normalize(normal);
+    N = normalize((mv*vec4(vNormal,0.0)).xyz);
     
     //Combine colors from all lights
+    color.rgb = vec3(0,0,0);
     for (int i = 0; i < nLights; i++)
     {
-        gl_FragColor += lightCalc(light[i]);
+        color += lightCalc(light[i]);
     }
-    gl_FragColor.a = 1.0; //Override alpha from light calculations
-  }    	
+    color.a = 1.0; //Override alpha from light calculations
+  }
 }
-    	
+
 vec4 lightCalc(in _light light)
 {
   //Set up light direction for positional lights
@@ -128,6 +103,17 @@ vec4 lightCalc(in _light light)
                
   return color;
 }
+    </script>
+
+    <!-- This in-line script is a fragment shader resource.
+         Shaders can be linked from an external file as well. -->
+    <script id="fragment-shader" type="x-shader/x-fragment">
+    	precision mediump float;
+    	varying vec4 color;
+    	void main() 
+    	{ 
+            gl_FragColor = color;
+    	}
     </script>
 
     <!-- These are external javascript files. 
