@@ -53,7 +53,7 @@ void main()
 	 
 	// float angle = un_Twist * length(in_Vertex.xy);
 
-	degrees = (vPosition.z -(vPosition.z - 1))/ ((vPosition.z + 1) -(vPosition.z - 1));
+	degrees = (vPosition.z -(vPosition.z - 1.0))/ ((vPosition.z + 1.0) -(vPosition.z - 1.0));
 	degrees = degrees* degreesMax;
 	float s = sin(degrees*pi/180);
 	float c = cos(degrees*pi/180);
