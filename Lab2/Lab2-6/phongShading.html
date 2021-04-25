@@ -25,7 +25,6 @@ const int n = 1; // number of lights
 //uniforms
 uniform mat4 p;     // perspective matrix
 uniform mat4 mv;    // modelview matrix
-uniform float bulgeValue;
 
 //globals
 vec3 N; // fixed surface normal
@@ -33,20 +32,14 @@ vec3 N; // fixed surface normal
 void main() 
 {
   //Transform the point
-	mvPosition = mv*vPosition;  //mvPosition is interpolated for pixel lighting
-	//gl_Position = p*mvPosition; 
+  mvPosition = mv*vPosition;  //mvPosition is interpolated for pixel lighting
+  gl_Position = p*mvPosition; 
 
-	//normal is also interpolated for pixel lighting
-	normal = (mv*vec4(vNormal,0.0)).xyz ;
-
-
-	 gl_Position = p*mv*(vPosition +vec4( normal * bulgeValue, 1.0 ));
-	
-  
+  //normal is also interpolated for pixel lighting
+   normal = (mv*vec4(vNormal,0.0)).xyz;
   
     
 }
-
 
     </script>
 
@@ -137,8 +130,6 @@ vec4 lightCalc(in _light light)
 }
     </script>
 
-
-
     <!-- These are external javascript files. 
          The first three are the textbook libraries.
          The last one is your own javascript code. Make sure to change the name 
@@ -150,7 +141,6 @@ vec4 lightCalc(in _light light)
     <script type="text/javascript" src="../Common/j3di.js"></script>
     <script type="text/javascript" src="../Common/jscolor.js"></script>
     <script type="text/javascript" src="batSpin.js"></script>
-    <!--<script type="text/javascript" src="phongShading.js"></script>-->
 </head>
 
 <body bgcolor="#606060" text="#ffffff">
@@ -160,7 +150,7 @@ vec4 lightCalc(in _light light)
     <canvas id="gl-canvas" width="800" height="560">
         Oops ... your browser doesn't support the HTML5 canvas element
     </canvas>
-	<div>Bulge: <input id="bulge" type="range" min="0" max="4" step="0.5" value="0" style="width: 650px;" onchange="setBulge()"><span id="bulgeVal">bulge</span></div>
+	<div>Camera Rotate: 0<input id="rotYcam" type="range" min="0" max="360" step="0.1" value="0" style="width: 650px;" onchange="rotateCamera()">360 <span id="directionvalCam">fixme</span></div>
     <div>Light rotY: 0<input id="rotY" type="range" min="0" max="360" step="0.1" value="0" style="width: 650px;">360 <span id="directionval">fixme</span></div>
     <div>Shininess: 1<input id="shininess" type="range" min="1" max="255" step="1" value="50" style="width: 650px;">255 <span id="shininessval">fixme</span></div>
     <div>Sphere Rez: 5<input id="rez" type="range" min="5" max="100" step="1" value="10" style="width: 650px;">100 <span id="rezval">fixme</span></div>
@@ -174,18 +164,24 @@ vec4 lightCalc(in _light light)
 </html>
 
 <script type="text/javascript">
-function setBulge(){
+var mv = new mat4();
 
-  var ele = document.getElementById("bulge");
-   ele.oninput = ele.onchange = function (event) {
-	  var bulge = (event.srcElement || event.target).value;
-	  b = gl.getUniformLocation(program, "bulgeValue");
-	  document.getElementById("bulgeVal").innerHTML = bulge;
-	  gl.uniform1f(b, bulge);
-   };
-  //ele.value = 50;
-   document.getElementById("bulgeVal").innerHTML = document.getElementById("bulge").value;
+function rotateCamera(){
+// Get and set global ambient uniforms
+	global = {};
+	global.top = gl.getUniformLocation(program,"global.top");
+	global.bottom = gl.getUniformLocation(program,"global.bottom");
+	global.direction = gl.getUniformLocation(program,"global.direction");
+	var y = document.getElementById("rotYcam").value;
+	//alert(document.getElementById("rotYcam").value);
 
+	var eye = vec3(0.0, 1.0, 6.0);
+	var at =  vec3(0.0, 1.0, 0.0);
+	var up =  vec3(0.0, 1.0, 0.0);
+
+	mv =lookAt(eye,at,up);
+	//Put light direction into world space
+	gl.uniform4fv(global.direction, mult(transpose(mv), global.dir));
 }
 
 </script>

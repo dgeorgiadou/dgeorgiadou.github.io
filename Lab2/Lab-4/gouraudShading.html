@@ -12,55 +12,8 @@
 attribute vec4 vPosition;
 attribute vec3 vNormal;
 
-
 //outputs
 varying vec4 color;
-varying vec3 normal;
-varying vec4 mvPosition; //unprojected vertex position
-
-
-//constants
-const int n = 1; // number of lights
-
-//uniforms
-uniform mat4 p;     // perspective matrix
-uniform mat4 mv;    // modelview matrix
-uniform float bulgeValue;
-
-//globals
-vec3 N; // fixed surface normal
-
-void main() 
-{
-  //Transform the point
-	mvPosition = mv*vPosition;  //mvPosition is interpolated for pixel lighting
-	//gl_Position = p*mvPosition; 
-
-	//normal is also interpolated for pixel lighting
-	normal = (mv*vec4(vNormal,0.0)).xyz ;
-
-
-	 gl_Position = p*mv*(vPosition +vec4( normal * bulgeValue, 1.0 ));
-	
-  
-  
-    
-}
-
-
-    </script>
-
-    <!-- This in-line script is a fragment shader resource.
-         Shaders can be linked from an external file as well. -->
-    <script id="fragment-shader" type="x-shader/x-fragment">
-
-precision mediump float;
-varying vec4 color;
-varying vec3 normal; 
-varying vec4 mvPosition;
-
-vec3 N;
-
 
 //structs
 struct _light
@@ -83,31 +36,46 @@ struct _material
 const int nLights = 1; // number of lights
 
 //uniforms
+uniform mat4 p;     // perspective matrix
+uniform mat4 mv;    // modelview matrix
 uniform bool lighting;  // to enable and disable lighting
 uniform vec4 uColor;    // colour to use when lighting is disabled
 uniform _light light[nLights]; // properties for the n lights
-uniform _material material; // material properties    	
-  vec4 lightCalc(in _light light);
-  	
-    	
+uniform _material material; // material properties
+
+//globals
+vec4 mvPosition; // unprojected vertex position
+vec3 N; // fixed surface normal
+
+//prototypes
+vec4 lightCalc(in _light light);
+
 void main() 
-{ 
-  gl_FragColor = color;
-  if (lighting != false) 
+{
+  //Transform the point
+  mvPosition = mv*vPosition;  //mvPosition is used often
+  gl_Position = p*mvPosition; 
+
+  if (lighting == false) 
+  {
+	color = uColor;
+  }
+  else
   {
     //Make sure the normal is actually unit length, 
     //and isolate the important coordinates
-    N = normalize(normal);
+    N = normalize((mv*vec4(vNormal,0.0)).xyz);
     
     //Combine colors from all lights
+    color.rgb = vec3(0,0,0);
     for (int i = 0; i < nLights; i++)
     {
-        gl_FragColor += lightCalc(light[i]);
+        color += lightCalc(light[i]);
     }
-    gl_FragColor.a = 1.0; //Override alpha from light calculations
-  }    	
+    color.a = 1.0; //Override alpha from light calculations
+  }
 }
-    	
+
 vec4 lightCalc(in _light light)
 {
   //Set up light direction for positional lights
@@ -137,7 +105,16 @@ vec4 lightCalc(in _light light)
 }
     </script>
 
-
+    <!-- This in-line script is a fragment shader resource.
+         Shaders can be linked from an external file as well. -->
+    <script id="fragment-shader" type="x-shader/x-fragment">
+    	precision mediump float;
+    	varying vec4 color;
+    	void main() 
+    	{ 
+            gl_FragColor = color;
+    	}
+    </script>
 
     <!-- These are external javascript files. 
          The first three are the textbook libraries.
@@ -150,7 +127,6 @@ vec4 lightCalc(in _light light)
     <script type="text/javascript" src="../Common/j3di.js"></script>
     <script type="text/javascript" src="../Common/jscolor.js"></script>
     <script type="text/javascript" src="batSpin.js"></script>
-    <!--<script type="text/javascript" src="phongShading.js"></script>-->
 </head>
 
 <body bgcolor="#606060" text="#ffffff">
@@ -160,7 +136,6 @@ vec4 lightCalc(in _light light)
     <canvas id="gl-canvas" width="800" height="560">
         Oops ... your browser doesn't support the HTML5 canvas element
     </canvas>
-	<div>Bulge: <input id="bulge" type="range" min="0" max="4" step="0.5" value="0" style="width: 650px;" onchange="setBulge()"><span id="bulgeVal">bulge</span></div>
     <div>Light rotY: 0<input id="rotY" type="range" min="0" max="360" step="0.1" value="0" style="width: 650px;">360 <span id="directionval">fixme</span></div>
     <div>Shininess: 1<input id="shininess" type="range" min="1" max="255" step="1" value="50" style="width: 650px;">255 <span id="shininessval">fixme</span></div>
     <div>Sphere Rez: 5<input id="rez" type="range" min="5" max="100" step="1" value="10" style="width: 650px;">100 <span id="rezval">fixme</span></div>
@@ -172,20 +147,3 @@ vec4 lightCalc(in _light light)
 	</button>
 </body>
 </html>
-
-<script type="text/javascript">
-function setBulge(){
-
-  var ele = document.getElementById("bulge");
-   ele.oninput = ele.onchange = function (event) {
-	  var bulge = (event.srcElement || event.target).value;
-	  b = gl.getUniformLocation(program, "bulgeValue");
-	  document.getElementById("bulgeVal").innerHTML = bulge;
-	  gl.uniform1f(b, bulge);
-   };
-  //ele.value = 50;
-   document.getElementById("bulgeVal").innerHTML = document.getElementById("bulge").value;
-
-}
-
-</script>
