@@ -42,7 +42,7 @@ void main()
 	// move the position along the normal and transform it
 	//vec3 newPosition = vPosition.xyz + normal * 2.5;
 	
-	 gl_Position = p*mv*(vPosition +vec4( normal * 2.5, 1.0 ));
+	 gl_Position = p*mv*(vPosition +vec4( normal * 0.5, 1.0 ));
 	
   
   
